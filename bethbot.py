@@ -1,6 +1,7 @@
 import asyncio
 import os
 import random 
+import traceback
 from dotenv import load_dotenv
 from openai import OpenAI
 from telegram import Update
