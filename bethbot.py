@@ -42,7 +42,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reply = response.choices[0].message.content
                 await update.message.reply_text(reply)
             except Exception as e:
-                await update.message.reply_text(f"OpenAI error: {e}")
+                await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
 
     # CASE 2: User mentions bot with a new question
     if message.text and f"@{bot_user.username}" in message.text:
@@ -53,7 +53,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reply = response.choices[0].message.content
                 await update.message.reply_text(reply)
             except Exception as e:
-                await update.message.reply_text("Error communicating with OpenAI.")
+                await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
 
 if __name__ == '__main__':
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
