@@ -60,7 +60,7 @@ async def send_hourly_message(app):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not update.message: 
         return
-        
+
     try: 
         message = update.message
         bot_user = await context.bot.get_me()
@@ -74,7 +74,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 try:
                     response = client.chat.completions.create(model="gpt-4", messages=[{"role": "developer", "content": PROMPT}, {"role": "developer", "content": original_bot_message}, {"role": "user", "content": user_followup}])
                     reply = response.choices[0].message.content
-                    await context.bot.send_message(chat_id=TARGET_CHAT_ID, text=reply)
+                    await context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
                 except Exception as e:
                     await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
 
@@ -85,7 +85,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 try:
                     response = client.chat.completions.create(model="gpt-4", messages=[{"role": "developer", "content": PROMPT}, {"role": "user", "content": user_message}])
                     reply = response.choices[0].message.content
-                    await context.bot.send_message(chat_id=TARGET_CHAT_ID, text=reply)
+                    await context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
                 except Exception as e:
                     await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
     except Exception as e:
