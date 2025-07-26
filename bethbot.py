@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+print("Loaded OpenAI key:", os.getenv("TELEGRAM_BOT_TOKEN"))
+print("Loaded Telegram key:", os.getenv("OPENAI_API_KEY"))
+
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
