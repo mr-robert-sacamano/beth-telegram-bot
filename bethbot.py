@@ -1,6 +1,7 @@
 import asyncio
 import os
 import random 
+import re
 import traceback
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -16,9 +17,9 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 RANDOM_MESSAGES = [
     "Hey there 👋 I'm here if you need anything! Feel free to ask me anything.",
     "Did you know I can answer questions? Try asking me something!",
-    "I'm always listening... just tag @bethchatbot in the group.",
+    "I'm always listening... just tag me in a message to ask me a question!",
     "💡 Tip: Reply to my messages for smart follow-ups.",
-    "Need help or ideas? You can talk to me by tagging @bethchatbot. 🤖"
+    "Need help or ideas? You can talk to me by tagging me in a message. 🤖"
 ]
 
 PROMPT = '''Here is a prompt you can use for the ai:
@@ -47,6 +48,15 @@ Rules:
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
+def sanitize_bot_reply(text: str) -> str:
+    # Remove @mentions
+    text = re.sub(r'@[\w_]+', '[mention removed]', text)
+    
+    # Remove Telegram links
+    text = re.sub(r'https?://t\.me/\S+', '[link removed]', text)
+    
+    return text
+
 async def start_background_tasks(app):
     asyncio.create_task(send_hourly_message(app))
 
@@ -73,7 +83,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if original_bot_message:
                 try:
                     response = client.chat.completions.create(model="gpt-4", messages=[{"role": "developer", "content": PROMPT}, {"role": "developer", "content": original_bot_message}, {"role": "user", "content": user_followup}])
-                    reply = response.choices[0].message.content
+                    reply = sanitize_bot_reply(response.choices[0].message.content)
                     await context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
                 except Exception as e:
                     await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
@@ -84,7 +94,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if user_message:
                 try:
                     response = client.chat.completions.create(model="gpt-4", messages=[{"role": "developer", "content": PROMPT}, {"role": "user", "content": user_message}])
-                    reply = response.choices[0].message.content
+                    reply = sanitize_bot_reply(response.choices[0].message.content)
                     await context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
                 except Exception as e:
                     await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
