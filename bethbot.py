@@ -60,8 +60,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
     bot_user = await context.bot.get_me()
 
-    print("Group Chat ID:", chat_id)
-
     print("Raw update:", update)
 
     # CASE 1: User replies to bot message
