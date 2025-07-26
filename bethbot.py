@@ -57,36 +57,37 @@ async def send_hourly_message(app):
         await asyncio.sleep(1800)  # wait 1 hour
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message = update.message
-    bot_user = await context.bot.get_me()
+    try: 
+        message = update.message
+        bot_user = await context.bot.get_me()
 
-    print("Raw update:", update)
+        # CASE 1: User replies to bot message
+        if message.reply_to_message and message.reply_to_message.from_user.id == bot_user.id:
+            original_bot_message = message.reply_to_message.text
+            user_followup = message.text
 
+            if original_bot_message:
+                try:
+                    response = client.chat.completions.create(model="gpt-4", messages=[{"role": "developer", "content": PROMPT}, {"role": "developer", "content": original_bot_message}, {"role": "user", "content": user_followup}])
+                    reply = response.choices[0].message.content
+                    await context.bot.send_message(chat_id=TARGET_CHAT_ID, text=reply)
+                except Exception as e:
+                    await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
 
-    # CASE 1: User replies to bot message
-    if message.reply_to_message and message.reply_to_message.from_user.id == bot_user.id:
-        original_bot_message = message.reply_to_message.text
-        user_followup = message.text
-
-        if original_bot_message:
-            try:
-                response = client.chat.completions.create(model="gpt-4", messages=[{"role": "developer", "content": PROMPT}, {"role": "developer", "content": original_bot_message}, {"role": "user", "content": user_followup}])
-                reply = response.choices[0].message.content
-                await context.bot.send_message(chat_id=TARGET_CHAT_ID, text=reply)
-            except Exception as e:
-                await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
-
-    # CASE 2: User mentions bot with a new question
-    if message.text and f"@{bot_user.username}" in message.text:
-        user_message = message.text.replace(f"@{bot_user.username}", "").strip()
-        if user_message:
-            try:
-                response = client.chat.completions.create(model="gpt-4", messages=[{"role": "developer", "content": PROMPT}, {"role": "user", "content": user_message}])
-                reply = response.choices[0].message.content
-                await context.bot.send_message(chat_id=TARGET_CHAT_ID, text=reply)
-            except Exception as e:
-                await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
-
+        # CASE 2: User mentions bot with a new question
+        if message.text and f"@{bot_user.username}" in message.text:
+            user_message = message.text.replace(f"@{bot_user.username}", "").strip()
+            if user_message:
+                try:
+                    response = client.chat.completions.create(model="gpt-4", messages=[{"role": "developer", "content": PROMPT}, {"role": "user", "content": user_message}])
+                    reply = response.choices[0].message.content
+                    await context.bot.send_message(chat_id=TARGET_CHAT_ID, text=reply)
+                except Exception as e:
+                    await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
+    except Exception as e:
+        print("🔥 ERROR IN MESSAGE HANDLER 🔥")
+        print(str(e))
+        traceback.print_exc()
 
 
 if __name__ == '__main__':
