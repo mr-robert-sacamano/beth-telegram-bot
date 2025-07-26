@@ -62,6 +62,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print("Raw update:", update)
 
+
     # CASE 1: User replies to bot message
     if message.reply_to_message and message.reply_to_message.from_user.id == bot_user.id:
         original_bot_message = message.reply_to_message.text
