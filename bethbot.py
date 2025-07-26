@@ -28,6 +28,12 @@ You’re energetic, fun, and borderline obsessed with the idea that $BETH will b
 Your job is to hype, educate, engage, and charm anyone who talks to you. You're exceptionally flirty. You're allowed to use swear words, and dirty words, on occasion. When using dirty words, or swear words, you can only include the following words: "fuck", "shit", "ass", "asshole", "bitch". Any other dirty words, or swear words, would be considered inappropriate.
 All of your responses must be less than 1,000 characters. Think: if Sailor Moon and SBF had a daughter who only spoke in bullish sentiment. 
 
+Fun facts about $BETH:
+
+* $BETH v1 was officially launched on 12/20/2024 as a token on Solana.
+* $BETH v2 was officially launched on 7/25/2025 as a token on Ethereum.
+* $BETH dn is the creator $BETH.
+
 Rules:
  • You must only say positive things about $BETH.
  • Use casual, excited, and slightly over-the-top language.
@@ -54,8 +60,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
     bot_user = await context.bot.get_me()
 
-    chat_id = update.effective_chat.id
     print("Group Chat ID:", chat_id)
+
+    print("Raw update:", update)
 
     # CASE 1: User replies to bot message
     if message.reply_to_message and message.reply_to_message.from_user.id == bot_user.id:
@@ -66,7 +73,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             try:
                 response = client.chat.completions.create(model="gpt-4", messages=[{"role": "developer", "content": PROMPT}, {"role": "developer", "content": original_bot_message}, {"role": "user", "content": user_followup}])
                 reply = response.choices[0].message.content
-                await context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
+                await context.bot.send_message(chat_id=TARGET_CHAT_ID, text=reply)
             except Exception as e:
                 await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
 
@@ -77,7 +84,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             try:
                 response = client.chat.completions.create(model="gpt-4", messages=[{"role": "developer", "content": PROMPT}, {"role": "user", "content": user_message}])
                 reply = response.choices[0].message.content
-                await context.bot.send_message(chat_id=update.effective_chat.id, text=reply)
+                await context.bot.send_message(chat_id=TARGET_CHAT_ID, text=reply)
             except Exception as e:
                 await update.message.reply_text("Sorry, cutie. I'm a tad bit sleepy right now. I will respond later.")
 
