@@ -58,6 +58,9 @@ async def send_hourly_message(app):
         await asyncio.sleep(1800)  # wait 1 hour
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message: 
+        return
+        
     try: 
         message = update.message
         bot_user = await context.bot.get_me()
